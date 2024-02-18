@@ -1,3 +1,4 @@
+use diesel::dsl;
 use diesel::prelude::*;
 use diesel::result::Error;
 use diesel::sqlite::SqliteConnection;
@@ -33,4 +34,14 @@ pub fn get_record(conn: &mut SqliteConnection, rid: i64) -> Result<Record, Error
         .filter(records::rid.eq(rid))
         .select(Record::as_select())
         .first(conn)
+}
+
+pub fn get_duration_sum(conn: &mut SqliteConnection, uid: i64) -> Result<i64, Error> {
+    let res = records::table
+        .filter(records::uid.eq(uid))
+        .filter(records::totime.is_not_null())
+        // .select(dsl::sum(records::totime.assume_not_null() - records::fromtime).nullable())
+        .select((records::totime.assume_not_null(), records::fromtime))
+        .load(conn);
+    res.map(|x: Vec<(i64, i64)>| x.iter().map(|(totime, fromtime)| totime - fromtime).sum())
 }

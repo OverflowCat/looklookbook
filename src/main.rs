@@ -205,6 +205,27 @@ async fn answer(bot: Bot, msg: Message, cmd: Command) -> ResponseResult<()> {
                     .await?
             }
         }
+        Command::Me => {
+            let user = msg.from().unwrap();
+            let id = user.id;
+            let mut conn_guard = get_conn().await.lock().await;
+            let conn = &mut *conn_guard;
+            let userdata = create_or_get_user(
+                conn,
+                NewUser {
+                    uid: id.0 as i64,
+                    username: &user.username.clone().unwrap_or_default(),
+                    current_rid: None,
+                },
+            )
+            .unwrap();
+            let uid = userdata.uid;
+            let sum = get_duration_sum(conn, uid).unwrap_or_default();
+            let min = sum / 60;
+            let sec = sum % 60;
+            bot.send_message(msg.chat.id, format!("你总共阅读了 {} 分 {} 秒", min, sec))
+                .await?
+        }
         _ => bot.send_message(msg.chat.id, "Unimplemented…").await?,
     };
 
