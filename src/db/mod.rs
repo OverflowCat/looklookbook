@@ -4,10 +4,11 @@ use diesel::sqlite::SqliteConnection;
 use std::env;
 use tokio::sync::{Mutex, OnceCell};
 
-pub mod user;
 pub mod book;
 pub mod chap;
 pub mod record;
+pub mod reminder;
+pub mod user;
 
 static DB: OnceCell<Mutex<SqliteConnection>> = OnceCell::const_new();
 

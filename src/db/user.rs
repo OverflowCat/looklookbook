@@ -29,3 +29,7 @@ pub fn update_current_record(
         .execute(conn)?;
     Ok(())
 }
+
+pub fn get_all_users(conn: &mut SqliteConnection) -> Result<Vec<User>, Error> {
+    users::table.select(User::as_select()).load(conn)
+}

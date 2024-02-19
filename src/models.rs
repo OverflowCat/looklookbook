@@ -66,6 +66,16 @@ pub struct Reminder {
     pub interval: Option<i64>,
 }
 
+#[derive(Insertable)]
+#[diesel(table_name = crate::schema::reminders)]
+pub struct NewReminder {
+    pub id: Option<i64>,
+    pub uid: i64,
+    pub bid: Option<i64>,
+    pub cron: Option<String>,
+    pub interval: Option<i64>,
+}
+
 #[derive(Queryable, Selectable)]
 #[diesel(table_name = crate::schema::users)]
 #[diesel(check_for_backend(diesel::sqlite::Sqlite))]
